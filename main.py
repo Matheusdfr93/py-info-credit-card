@@ -3,17 +3,19 @@ import pandas as pd;
 import numpy as np;
 import matplotlib.pyplot as plt
 import media as average
-
+import salary as sl
 
 #trazendo dados do documento csv
 credit = pd.read_csv('./info.csv');
 
 #atribuindo dados em listas
 invoice_card = list(credit['Fatura']);
-ipca_per_month = list(credit['IPCA_mensal']);  
+ipca_per_month = list(credit['IPCA_mensal']);
+salary = list(credit['Salario']);  
 
 invoice_card = list(map(lambda x: x.replace(',', '.'), invoice_card))
 invoice_card = [float(i) for i in invoice_card];
+salary = [float(i) for i in salary];
 ipca_per_month = [float(i) for i in ipca_per_month];
 date = list(credit['Data'])
 
@@ -33,6 +35,9 @@ static = average.staticAverage(invoice_card)
 #Criar uma lista de anos
 year = list(set(credit['ano']))
 years = list(credit['ano'])
+
+#Encontrar a proporção salário/gastos
+percentage_salary = sl.percentageSalary(salary, invoice_card)
 
 # Criar lista de gastos por ano
 expenses_per_year = []
@@ -55,7 +60,7 @@ for i in range (len(invoice_card)):
 plt.subplot(2, 2, 1)
 plt.plot(date,invoice_card, marker = '', label = 'Gastos', color = 'black');
 plt.plot(date, moving, label = 'Média móvel', color = 'green');
-plt.plot(date, static, label = 'Média', color = 'yellow', linestyle = 'dashdot')
+plt.plot(date, static, label = 'Média', color = '#112299', linestyle = 'dashdot')
 plt.legend(loc='best');
 plt.title('Gastos por mês vs Média');
 plt.xlabel('Data');
@@ -77,6 +82,13 @@ plt.grid(True)
 plt.title('Gastos por ano');
 plt.xlabel('Ano');
 plt.ylabel('Gastos R$');
+
+plt.subplot(2, 2, 4)
+plt.plot(date,percentage_salary, color = '#990099', label = 'Faturas');
+plt.grid(True)
+plt.title('Relação salário/gastos em %');
+plt.xlabel('Ano');
+plt.ylabel('%');
 
 plt.show()
 
